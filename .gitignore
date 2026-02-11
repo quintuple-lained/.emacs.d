@@ -49,3 +49,10 @@ flycheck_*.el
 
 # undo-tree
 *.~undo-tree~
+
+# files local machines can handle
+eln-cache/
+straight/
+auto-save-list/
+history
+org-roam.db
