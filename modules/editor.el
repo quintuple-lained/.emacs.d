@@ -1,4 +1,4 @@
-;; -*- mode: emacs-lisp; lexical-binding: t; -*-
+;; -*- gMmode: emacs-lisp; lexical-binding: t; -*-
 
 ; general settings
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -17,7 +17,6 @@
 ;; files and history
 (global-auto-revert-mode t)
 (setq auto-revert-check-vc-info t)
-(savehist-mode 1)
 (setq switch-to-buffer-obey-display-actions t)
 
 ;; completion stuff
@@ -66,12 +65,47 @@
           (if this-win-2nd (other-window 1))))))
 (global-set-key (kbd "C-x |") 'toggle-window-split)
 
-;; the single most necessary packages
-(use-package ace-jump-mode
-  :bind ("C-<tab>" . ace-jump-mode))
+(use-package vertico
+  :init
+  (vertico-mode)
+  :custom
+  (vertico-cycle t)
+)
+
+(use-package savehist
+  :init
+  (savehist-mode 1)
+)
+
+(use-package marginalia
+  :init
+  (savehist-mode 1)
+)
+
+(use-package orderless
+  :custom
+  (completion-syles '(oderless basic))
+  (completion-category-overrides '((file (syles basic partial-completion))))
+)
+
+(use-package consult
+  :bind (
+	("C-s" . consult-line)
+	("C-x b" . consult-buffer)
+	("M-y" . consult-yank-pop)
+       )
+)
+
+(use-package avy
+  :bind ("C-<tab>" . avy-goto-char-timer)
+  :config
+  (setq avy-timeout-seconds 0.3))
 
 (use-package smartparens
-  :bind (("<localleader>(" . sp-wrap-round)
+  :bind (
+	 ("<localleader>(" . sp-wrap-round)
          ("<localleader>{" . sp-wrap-curly)
          ("<localleader>[" . sp-wrap-square)
-         ("<localleader>DEL" . sp-splice-sexp-killing-backward)))
+         ("<localleader>DEL" . sp-splice-sexp-killing-backward)
+	)
+)
