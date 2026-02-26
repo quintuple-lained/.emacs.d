@@ -45,6 +45,28 @@
 
 (use-package uv-mode
   :hook (python-mode . uv-auto-activate-hook)
-)
+  )
+
+;; clojure support
+(use-package clojure-mode
+  :mode ("\\.clj\\'" . clojure-mode))
+
+(use-package cider
+  :hook (clojure-mode . cider-mode)
+  :config
+  ;; logical defaults for a streamlined repl experience
+  (setq cider-repl-display-help nil                 ; keep repl buffer clean
+        cider-repl-pop-to-buffer-on-connect t       ; focus repl on startup
+        cider-repl-use-pretty-printing t            ; readable output
+        cider-font-lock-dynamically t               ; highlight based on repl state
+        cider-save-file-on-load t                   ; avoid prompt on C-c C-k
+        cider-repl-history-file (expand-file-name "cider-history" user-emacs-directory))
+  (add-hook 'cider-mode-hook #'eldoc-mode))
+
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '(clojure-mode . ("clojure-lsp"))))
+
+(add-hook 'clojure-mode-hook #'eglot-ensure)
 
 ;; many more to come
