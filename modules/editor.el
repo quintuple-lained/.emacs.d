@@ -29,6 +29,9 @@
       completions-format 'one-column
       completions-group t
       completion-auto-select 'second-tab)
+(setq line-number-mode t)
+(setq global-display-line-numbers-mode t)
+(setq column-number-mode t)
 
 ;; neat keybinds totally original
 (define-key global-map (kbd "C-x C-o") (kbd "C-x o"))  ;; Switch window
@@ -84,7 +87,7 @@
 
 (use-package orderless
   :custom
-  (completion-syles '(oderless basic))
+  (completion-styles '(orderless basic))
   (completion-category-overrides '((file (syles basic partial-completion))))
 )
 
@@ -109,3 +112,18 @@
          ("<localleader>DEL" . sp-splice-sexp-killing-backward)
 	)
 )
+
+(use-package multiple-cursors
+  :bind (
+	 ("M-<down>" . mc/mark-next-like-this)
+	 ("M-<up>" . mc/mark-previous-like-this)
+  )
+)
+
+(use-package which-key
+  :ensure t
+  :init (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-delay 0.3))
+
