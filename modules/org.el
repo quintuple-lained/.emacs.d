@@ -25,7 +25,8 @@
 (use-package org-roam
   :config
   (setq org-roam-directory (file-truename "~/org-roam"))
-  (org-roam-db-autosync-mode))
+  (org-roam-db-autosync-mode)
+)
 
 (defun today-org (directory)
   "Create an .org file in the specified DIRECTORY named with the current date."
