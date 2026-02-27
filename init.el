@@ -32,6 +32,7 @@
 (setq straight-use-package-by-default t)
 (require 'use-package-ensure)
 (setq use-package-always-ensure t)
+(set-face-attribute 'default nil :font "AnonymicePro Nerd Font-12")
 
 ;; system specific stuff
 (defvar my-system-type
