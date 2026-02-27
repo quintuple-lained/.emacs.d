@@ -19,7 +19,10 @@
 	    )
 )
 
-(use-package vterm)
+(use-package vterm
+  :config
+  (setq vterm-shell "/usr/bin/fish")
+  )
 
 (use-package markdown-mode
   :hook (markdown-mode . visual-line-mode)
