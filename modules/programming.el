@@ -31,11 +31,17 @@
 (use-package yaml-mode)
 (use-package json-mode)
 
+; holy FUCK this is not how i want my code to look, maybe another day
+;(use-package elisp-autofmt
+; :commands (elisp-autofmt-mode elisp-autofmt-buffer)
+;  :hook (emacs-lisp-mode . elisp-autofmt-mode)
+;  )
+
 ;; kubernetes stuff here
 (use-package k8s-mode
   :ensure t
   :hook (k8s-mode . yas-minor-mode)
-)
+  )
 ;; python stuff here
 (use-package python
   :ensure nil
@@ -45,9 +51,18 @@
   :config
   )
 
+(use-package paredit
+  :hook (prog-mode . paredit-mode)
+  )
 
-(use-package uv-mode
-  :hook (python-mode . uv-auto-activate-hook)
+  (use-package uv-mode
+    :hook (python-mode . uv-auto-activate-hook)
+    )
+
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode)
+  :custom
+  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
   )
 
 ;; clojure support
