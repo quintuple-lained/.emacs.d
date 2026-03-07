@@ -53,10 +53,10 @@
       (message "Module %s not found" name))))
 
 ;; core modules, although some might have to move to system specific ones
-(load-module "ui")
 (load-module "editor")
 (load-module "programming")
 (load-module "org")
+(load-module "ui")
 
 ;; once ive got this more established i can load system specific stuff here
 (let ((sys-file (expand-file-name (format "systems/%s.el" my-system-type) user-emacs-directory)))

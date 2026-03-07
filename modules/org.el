@@ -20,7 +20,15 @@
   (setq org-tag-alist '((:startgroup) ("home" . ?h) ("work" . ?w) ("school" . ?s) (:endgroup)
                         (:newline)
                         (:startgroup) ("one-shot" . ?o) ("project" . ?j) ("tiny" . ?t) (:endgroup)
-                        ("meta") ("review") ("reading"))))
+                        ("meta") ("review") ("reading")))
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (shell . t)
+     (python . t)
+     ))
+  (setq org-agenda-files '("~/.emacs.d/org/"))
+  )
 
 (use-package org-roam
   :config

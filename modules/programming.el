@@ -54,10 +54,10 @@
 (use-package paredit
   :hook (prog-mode . paredit-mode)
   )
-
-  (use-package uv-mode
-    :hook (python-mode . uv-auto-activate-hook)
-    )
+;; neat idea but i dont want to deal with you anymore
+;;(use-package uv-mode
+;;  :hook (python-mode . uv-auto-activate-hook)
+;;  )
 
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode)
@@ -83,10 +83,7 @@
 
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs
-               '(clojure-mode . ("clojure-lsp"))))
-
-(add-hook 'clojure-mode-hook #'eglot-ensure)
-  :hook (python-mode . uv-mode-auto-activate-hook))
+               '(clojure-mode . ("clojure-lsp")))))
 
 (use-package corfu
   :custom
@@ -127,4 +124,10 @@
 
 (use-package eldoc-box
   :hook (eglot-managed-mode . eldoc-box-hover-mode))
+
+;; (use-package graphviz-dot-mode
+;;   :config
+;;   (setq graphviz-dot-indent-width 4)
+;;   :hook
+;;   (graphviz-dot-mode . flycheck-mode))
 ;; many more to come
