@@ -60,3 +60,4 @@ recentf
 .cache/
 themes/
 cider-history
+custom.el
