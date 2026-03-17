@@ -8,7 +8,7 @@
          (clojure-mode  . eglot-ensure))
   :config
   (add-to-list 'eglot-server-programs
-               '((python-mode python-ts-mode) . ("ruff" "server")))
+               '((python-mode python-ts-mode) . ("basedpyright-langserver" "--stdio")))
   (add-to-list 'eglot-server-programs
                '(clojure-mode . ("clojure-lsp")))
 
