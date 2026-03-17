@@ -5,20 +5,74 @@
   :hook (
 	 (python-mode . eglot-ensure)
 	 (python-ts-mode . eglot-ensure)
-	 )
+         (clojure-mode  . eglot-ensure))
   :config
   (add-to-list 'eglot-server-programs
-	       '((python-mode python-ts-mode) . ("ruff" "server") )
-	       )
+               '((python-mode python-ts-mode) . ("ruff" "server")))
+  (add-to-list 'eglot-server-programs
+               '(clojure-mode . ("clojure-lsp")))
+
+  ;; let corfu handle completion UI, not eglot's default
+  (setq eglot-stay-out-of '(eldoc))
+  ;; faster completions — don't wait for server idle
+  (setq eglot-send-changes-idle-time 0.1))
+
+;;; Ruff formatting on save (separate from eglot's code actions)
+(defun my/ruff-format-buffer ()
+  "Format the current buffer with ruff format via shell command."
+  (when (and (derived-mode-p 'python-mode 'python-ts-mode)
+             (executable-find "ruff"))
+    (let ((point-pos (point))
+          (window-start-pos (window-start)))
+      (shell-command-on-region (point-min) (point-max)
+                               "ruff format --stdin-filename buffer.py -"
+                               (current-buffer) t
+                               "*ruff-format-errors*" t)
+      (goto-char point-pos)
+      (set-window-start (selected-window) window-start-pos))))
+
+(add-hook 'python-mode-hook
+          (lambda ()
+            (add-hook 'before-save-hook #'my/ruff-format-buffer nil t)))
+(add-hook 'python-ts-mode-hook
+          (lambda ()
+            (add-hook 'before-save-hook #'my/ruff-format-buffer nil t)))
+
+;;; Completion — corfu + cape for a better capf pipeline
+(use-package corfu
+  :custom
+  (corfu-auto t)
+  (corfu-auto-delay 0.15)
+  (corfu-auto-prefix 2)
+  (corfu-cycle t)
+  (corfu-quit-no-match 'separator)
+  (corfu-preselect 'prompt)
+  :init
+  (global-corfu-mode))
+
+(use-package kind-icon
+  :after corfu
+  :custom
+  (kind-icon-default-face 'corfu-default)
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+
+(use-package cape
+  :after eglot
+  :config
   (add-hook 'eglot-managed-mode-hook
             (lambda ()
-              (when (derived-mode-p 'python-mode 'python-ts-mode)
-                (add-hook 'before-save-hook #'eglot-format-buffer nil t)
-		)
-	      )
-	    )
-)
+              (setq-local completion-at-point-functions
+                          (list (cape-capf-super
+                                 #'eglot-completion-at-point
+                                 #'cape-dabbrev)
+                                #'cape-file)))))
 
+;;; Eldoc — hover at point instead of random floating box
+(use-package eldoc-box
+  :hook (eglot-managed-mode . eldoc-box-hover-at-point-mode))
+
+;;; Terminal
 (use-package vterm
   :config
   (setq vterm-shell "/usr/bin/fish")
@@ -46,10 +100,7 @@
 (use-package python
   :ensure nil
   :mode ("\\.py\\'" . python-mode)
-  :interpreter ("python" . python-mode)
-  :hook (python-mode . eglot-ensure)
-  :config
-  )
+  :interpreter ("python" . python-mode))
 
 (use-package paredit
   :hook (prog-mode . paredit-mode)
@@ -60,10 +111,7 @@
 ;;  )
 
 (use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode)
-  :custom
-  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
-  )
+  :hook (prog-mode . rainbow-delimiters-mode))
 
 ;; clojure support
 (use-package clojure-mode
@@ -72,36 +120,20 @@
 (use-package cider
   :hook (clojure-mode . cider-mode)
   :config
-  ;; logical defaults for a streamlined repl experience
-  (setq cider-repl-display-help nil                 ; keep repl buffer clean
-        cider-repl-pop-to-buffer-on-connect t       ; focus repl on startup
-        cider-repl-use-pretty-printing t            ; readable output
-        cider-font-lock-dynamically t               ; highlight based on repl state
-        cider-save-file-on-load t                   ; avoid prompt on C-c C-k
+  (setq cider-repl-display-help nil
+        cider-repl-pop-to-buffer-on-connect t
+        cider-repl-use-pretty-printing t
+        cider-font-lock-dynamically t
+        cider-save-file-on-load t
         cider-repl-history-file (expand-file-name "cider-history" user-emacs-directory))
-  (add-hook 'cider-mode-hook #'eldoc-mode)
+  (add-hook 'cider-mode-hook #'eldoc-mode))
 
-(with-eval-after-load 'eglot
-  (add-to-list 'eglot-server-programs
-               '(clojure-mode . ("clojure-lsp")))))
+;;; Kubernetes
+(use-package k8s-mode
+  :ensure t
+  :hook (k8s-mode . yas-minor-mode))
 
-(use-package corfu
-  :custom
-  (corfu-auto t)
-  (corfu-cycle t)
-  (corfu-quit-no-match 'separator)
-  :init
-  (global-corfu-mode)
-  )
-
-(use-package kind-icon
-  :after corfu
-  :custom
-  (kind-icon-default-face 'corfu-default)
-  :config
-  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter)
-  )
-
+;;; File tree
 (use-package treemacs
   :bind
   (:map global-map
@@ -122,12 +154,5 @@
   :bind (("M-S l" . consult-lsp-symbols))
   )
 
-(use-package eldoc-box
-  :hook (eglot-managed-mode . eldoc-box-hover-mode))
-
-;; (use-package graphviz-dot-mode
-;;   :config
-;;   (setq graphviz-dot-indent-width 4)
-;;   :hook
-;;   (graphviz-dot-mode . flycheck-mode))
+(provide 'programming)
 ;; many more to come
