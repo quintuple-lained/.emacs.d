@@ -109,3 +109,4 @@
   (setq dashboard-center-content t)
   (dashboard-setup-startup-hook))
 
+(use-package magit)
