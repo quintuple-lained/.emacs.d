@@ -5,6 +5,7 @@
   :hook (
 	 (python-mode . eglot-ensure)
 	 (python-ts-mode . eglot-ensure)
+	 (rust-mode . eglot-ensure)
 	 )
   :config
   (add-to-list 'eglot-server-programs
@@ -27,6 +28,14 @@
 (use-package markdown-mode
   :hook (markdown-mode . visual-line-mode)
 )
+
+(use-package rust-mode
+  :config
+  (setq rust-format-on-save t))
+
+(use-package aggressive-indent
+  :config
+  (global-aggressive-indent-mode 1))
 
 (use-package yaml-mode)
 (use-package json-mode)
