@@ -2,12 +2,10 @@
 
 (use-package eglot
   :ensure nil
-  :hook (
-	 (python-mode . eglot-ensure)
+  :hook ((python-mode . eglot-ensure)
 	 (python-ts-mode . eglot-ensure)
 	 (rust-mode . eglot-ensure)
-	 )
-         (clojure-mode  . eglot-ensure))
+	 (clojure-mode . eglot-ensure))
   :config
   (add-to-list 'eglot-server-programs
                '((python-mode python-ts-mode) . ("basedpyright-langserver" "--stdio")))
