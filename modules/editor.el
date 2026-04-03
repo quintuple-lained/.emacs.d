@@ -38,6 +38,7 @@
   (global-display-line-numbers-mode 1)
   (global-display-fill-column-indicator-mode 1)
   (global-unset-key (kbd "C-z")))
+  (setq dired-dwim-target t)
 
 ;;; Autosaves
 (defvar autosave-dir (expand-file-name "~/.emacs-autosaves/"))
