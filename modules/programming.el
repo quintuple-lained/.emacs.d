@@ -6,8 +6,6 @@
 	 (python-mode . eglot-ensure)
 	 (python-ts-mode . eglot-ensure)
 	 (rust-mode . eglot-ensure)
-	 )
-=======
          (clojure-mode  . eglot-ensure))
   :config
   (add-to-list 'eglot-server-programs
