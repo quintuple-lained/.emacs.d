@@ -5,12 +5,15 @@
   :hook ((python-mode . eglot-ensure)
 	 (python-ts-mode . eglot-ensure)
 	 (rust-mode . eglot-ensure)
-	 (clojure-mode . eglot-ensure))
+	 (clojure-mode . eglot-ensure)
+	 (nix-mode . eglot-ensure))
   :config
   (add-to-list 'eglot-server-programs
                '((python-mode python-ts-mode) . ("basedpyright-langserver" "--stdio")))
   (add-to-list 'eglot-server-programs
                '(clojure-mode . ("clojure-lsp")))
+  (add-to-list 'eglot-server-programs
+               '(nix-mode . ("nixd")))
 
   ;; let corfu handle completion UI, not eglot's default
   (setq eglot-stay-out-of '(eldoc))
@@ -161,6 +164,27 @@
 (use-package consult-lsp
   :bind (("M-S l" . consult-lsp-symbols))
   )
+
+;; nix support — parity with the nixvim setup (nixd LSP + nixfmt on save)
+(use-package nix-mode
+  :mode "\\.nix\\'")
+
+(defun my/nixfmt-format-buffer ()
+  "Format the current buffer with nixfmt via shell command."
+  (when (and (derived-mode-p 'nix-mode)
+             (executable-find "nixfmt"))
+    (let ((point-pos (point))
+          (window-start-pos (window-start)))
+      (shell-command-on-region (point-min) (point-max)
+                               "nixfmt"
+                               (current-buffer) t
+                               "*nixfmt-errors*" t)
+      (goto-char point-pos)
+      (set-window-start (selected-window) window-start-pos))))
+
+(add-hook 'nix-mode-hook
+          (lambda ()
+            (add-hook 'before-save-hook #'my/nixfmt-format-buffer nil t)))
 
 (provide 'programming)
 ;; many more to come
